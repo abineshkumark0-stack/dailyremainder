@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Routine Reminder Advanced</title>
+  <style>
+    :root {
+      --violet-dark: #2c003e;
+      --violet-mid: #4b0082;
+      --violet-light: #7b2ff7;
+      --light-bg: #f4f4f9;
+      --light-text: #222;
+      --dark-text: #fff;
+      --green: #4caf50;
+      --orange: #ff9800;
+      --red: #f44336;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, var(--violet-dark), var(--violet-mid), var(--violet-dark));
+      color: var(--dark-text);
+      min-height: 100vh;
+      transition: background 0.5s, color 0.5s;
+    }
+
+    body.light-theme {
+      background: var(--light-bg);
+      color: var(--light-text);
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 30px auto 80px;
+      padding: 25px 30px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(123, 47, 247, 0.6);
+      text-align: center;
+      transition: background-color 0.5s, color 0.5s;
+    }
+
+    body.light-theme .container {
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      color: var(--light-text);
+    }
+
+    h2 {
+      margin-bottom: 25px;
+    }
+
+    input, select, button {
+      padding: 10px;
+      margin: 8px 5px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.light-theme input, body.light-theme select {
+      border: 1px solid #ccc;
+      background-color: #fff;
+      color: var(--light-text);
+    }
+
+    button {
+      background-color: var(--violet-light);
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #591fd0;
+    }
+
+    body.light-theme button {
+      background-color: var(--violet-mid);
+      color: white;
+    }
+    body.light-theme button:hover {
+      background-color: #36007b;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: background-color 0.5s, color 0.5s;
+    }
+
+    body.light-theme table {
+      background-color: #fafafa;
+      color: var(--light-text);
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #999;
+      text-align: center;
+    }
+
+    th {
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: 700;
+      transition: background-color 0.5s;
+    }
+
+    body.light-theme th {
+      background-color: #ddd;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    select.status-select {
+      padding: 6px;
+      border-radius: 5px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #message {
+      margin: 15px 0 20px;
+      padding: 15px;
+      border-radius: 8px;
+      background-color: var(--violet-light);
+      color: #fff;
+      font-weight: 700;
+      display: none;
+      user-select: none;
+    }
+
+    body.light-theme #message {
+      background-color: var(--violet-mid);
+      color: white;
+    }
+
+    .actions-btn {
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+      font-size: 18px;
+      margin: 0 5px;
+      color: var(--violet-light);
+      transition: color 0.3s;
+    }
+
+    .actions-btn:hover {
+      color: #fff;
+    }
+
+    body.light-theme .actions-btn {
+      color: var(--violet-mid);
+    }
+    body.light-theme .actions-btn:hover {
+      color: #36007b;
+    }
+
+    /* Progress bar */
+    #progressBarContainer {
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      margin-top: 25px;
+      height: 25px;
+      overflow: hidden;
+    }
+    #progressBar {
+      height: 100%;
+      background-color: var(--green);
+      width: 0%;
+      transition: width 0.6s ease-in-out;
+      font-weight: 700;
+      color: white;
+      text-align: center;
+      line-height: 25px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px 15px 80px;
+        padding: 20px;
+      }
+
+      table, th, td {
+        font-size: 14px;
+      }
+
+      input, select, button {
+        font-size: 14px;
+        padding: 8px;
+      }
+    }
+
+    #themeToggle {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      background-color: var(--violet-light);
+      color: white;
+      font-weight: 600;
+      z-index: 999;
+      transition: background-color 0.3s;
+    }
+    #themeToggle:hover {
+      background-color: #591fd0;
+    }
+    body.light-theme #themeToggle {
+      background-color: var(--violet-mid);
+    }
+    body.light-theme #themeToggle:hover {
+      background-color: #36007b;
+    }
+
+    #importFile {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <button id="themeToggle">Light Mode</button>
+
+  <!-- Page 1 -->
+  <div id="page1" class="container">
+    <h2>உங்கள் Email ஐ உள்ளிடுங்கள்</h2>
+    <input type="email" id="emailInput" placeholder="உங்கள் Email" required />
+    <br />
+    <button onclick="goToPage2()">தொடங்கவும்</button>
+  </div>
+
+  <!-- Page 2 -->
+  <div id="page2" class="container hidden">
+    <h2>Daily Routine Reminder</h2>
+
+    <div>
+      <input type="date" id="dateInput" />
+      <input type="text" id="activityInput" placeholder="Activity name" />
+      <select id="statusSelect">
+        <option value="Pending">Pending</option>
+        <option value="Completed">Completed</option>
+        <option value="Incompleted">Incompleted</option>
+      </select>
+      <button onclick="addActivity()">Add</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Time Added</th>
+          <th>Activity</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="activityTable"></tbody>
+    </table>
+
+    <div id="message"></div>
+
+    <div id="progressBarContainer">
+      <div id="progressBar">0%</div>
+    </div>
+
+    <!-- Chart Section -->
+    <div style="margin-top: 30px; height: 350px;">
+      <canvas id="statusChart"></canvas>
+    </div>
+
+    <div style="margin-top: 25px;">
+      <button onclick="exportData()">Export Data (JSON)</button>
+      <button onclick="document.getElementById('importFile').click()">Import Data (JSON)</button>
+      <input type="file" id="importFile" accept=".json" onchange="importData(event)" />
+    </div>
+
+    <div style="margin-top: 15px; font-size: 0.9em; color: gray;">
+      Data saved per user email in browser localStorage.<br>
+      Try refreshing - your data will stay.
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    const page1 = document.getElementById("page1");
+    const page2 = document.getElementById("page2");
+    const emailInput = document.getElementById("emailInput");
+    const dateInput = document.getElementById("dateInput");
+    const activityInput = document.getElementById("activityInput");
+    const statusSelect = document.getElementById("statusSelect");
+    const activityTable = document.getElementById("activityTable");
+    const messageEl = document.getElementById("message");
+    const progressBar = document.getElementById("progressBar");
+    const themeToggle = document.getElementById("themeToggle");
+    const importFileInput = document.getElementById("importFile");
+    let chart;
+    let currentUserEmail = "";
+    let activities = [];
+
+    dateInput.valueAsDate = new Date();
+
+    function setTheme(theme) {
+      if (theme === "light") {
+        document.body.classList.add("light-theme");
+        themeToggle.textContent = "Dark Mode";
+        localStorage.setItem("theme", "light");
+      } else {
+        document.body.classList.remove("light-theme");
+        themeToggle.textContent = "Light Mode";
+        localStorage.setItem("theme", "dark");
+      }
+      if (chart) chart.update();
+    }
+
+    themeToggle.addEventListener("click", () => {
+      if (document.body.classList.contains("light-theme")) setTheme("dark");
+      else setTheme("light");
+    });
+
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    setTheme(savedTheme);
+
+    function goToPage2() {
+      const email = emailInput.value.trim().toLowerCase();
+      if (!email) { alert("Email ஐ உள்ளிடவும்."); return; }
+      currentUserEmail = email;
+      loadActivities();
+      page1.classList.add("hidden");
+      page2.classList.remove("hidden");
+      showMessage(`Welcome, ${email}! Start adding your activities.`);
+      updateChart();
+      updateProgressBar();
+      requestNotificationPermission();
+    }
+
+    function addActivity() {
+      const activity = activityInput.value.trim();
+      const status = statusSelect.value;
+      const dateVal = dateInput.value;
+      if (!activity || !dateVal) { alert("Activity மற்றும் Date தேவை."); return; }
+
+      const now = new Date();
+      const timeAdded = now.toLocaleTimeString("ta-IN");
+      const newActivity = { id: Date.now(), date: dateVal, timeAdded, activity, status };
+      activities.push(newActivity);
+      saveActivities();
+      renderTable();
+      showMessageIfCompleted(status);
+      updateChart();
+      updateProgressBar();
+      activityInput.value = "";
+      statusSelect.value = "Pending";
+    }
+
+    function renderTable() {
+      activityTable.innerHTML = "";
+      activities.forEach((act) => {
+        const row = activityTable.insertRow();
+        row.insertCell(0).innerText = new Date(act.date).toLocaleDateString("ta-IN", { year: "numeric", month: "short", day: "numeric" });
+        row.insertCell(1).innerText = act.timeAdded;
+        row.insertCell(2).innerText = act.activity;
+
+        const statusCell = row.insertCell(3);
+        const select = document.createElement("select");
+        select.classList.add("status-select");
+        ["Pending", "Completed", "Incompleted"].forEach((opt) => {
+          const o = document.createElement("option");
+          o.value = opt; o.text = opt;
+          if (opt === act.status) o.selected = true;
+          select.appendChild(o);
+        });
+        select.addEventListener("change", () => {
+          act.status = select.value;
+          saveActivities(); showMessageIfCompleted(act.status);
+          updateChart(); updateProgressBar();
+        });
+        statusCell.appendChild(select);
+
+        const actionsCell = row.insertCell(4);
+        const editBtn = document.createElement("button");
+        editBtn.innerHTML = "✏️";
+        editBtn.classList.add("actions-btn");
+        editBtn.addEventListener("click", () => editActivity(act.id));
+        const delBtn = document.createElement("button");
+        delBtn.innerHTML = "🗑️";
+        delBtn.classList.add("actions-btn");
+        delBtn.addEventListener("click", () => {
+          if (confirm("இந்த activity ஐ நீக்க விரும்புகிறீர்களா?")) deleteActivity(act.id);
+        });
+        actionsCell.appendChild(editBtn);
+        actionsCell.appendChild(delBtn);
+      });
+    }
+
+    function editActivity(id) {
+      const act = activities.find((a) => a.id === id);
+      if (!act) return;
+      const newActivity = prompt("Activity பெயரை மாற்றவும்:", act.activity);
+      if (!newActivity) return;
+      const newDate = prompt("Activity தேதியை YYYY-MM-DD வடிவில் மாற்றவும்:", act.date);
+      if (!newDate.match(/^\d{4}-\d{2}-\d{2}$/)) return alert("தவறான தேதி வடிவம்.");
+      const newStatus = prompt("Status ஐ மாற்றவும்: (Pending, Completed, Incompleted)", act.status);
+      if (!["Pending", "Completed", "Incompleted"].includes(newStatus)) return alert("Status தவறு.");
+      act.activity = newActivity.trim(); act.date = newDate; act.status = newStatus;
+      saveActivities(); renderTable(); updateChart(); updateProgressBar();
+    }
+
+    function deleteActivity(id) {
+      activities = activities.filter((a) => a.id !== id);
+      saveActivities(); renderTable(); updateChart(); updateProgressBar();
+    }
+
+    function saveActivities() {
+      if (!currentUserEmail) return;
+      localStorage.setItem(`dailyRoutine_${currentUserEmail}`, JSON.stringify(activities));
+    }
+
+    function loadActivities() {
+      if (!currentUserEmail) return;
+      const saved = localStorage.getItem(`dailyRoutine_${currentUserEmail}`);
+      activities = saved ? JSON.parse(saved) : [];
+      renderTable();
+    }
+
+    function showMessageIfCompleted(status) {
+      if (status === "Completed") {
+        showMessage("👏 நல்ல வேலை! Activity முடிந்தது 🎉");
+        sendNotification("நன்றி! Activity Completed 🎉");
+      }
+    }
+
+    function showMessage(msg) {
+      messageEl.innerText = msg;
+      messageEl.style.display = "block";
+      setTimeout(() => messageEl.style.display = "none", 4000);
+    }
+
+    function updateProgressBar() {
+      const total = activities.length;
+      const completed = activities.filter(a => a.status === "Completed").length;
+      const percent = total ? Math.round((completed / total) * 100) : 0;
+      progressBar.style.width = percent + "%";
+      progressBar.innerText = percent + "%";
+    }
+
+    function updateChart() {
+      const statusCounts = { Completed: 0, Pending: 0, Incompleted: 0 };
+      activities.forEach((a) => statusCounts[a.status]++);
+      const data = {
+        labels: ["Completed", "Pending", "Incompleted"],
+        datasets: [{
+          data: [statusCounts.Completed, statusCounts.Pending, statusCounts.Incompleted],
+          backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
+          borderWidth: 2,
+          hoverOffset: 10
+        }]
+      };
+      const ctx = document.getElementById('statusChart').getContext('2d');
+      if (chart) {
+        chart.data = data; chart.update();
+      } else {
+        chart = new Chart(ctx, {
+          type: 'pie',
+          data: data,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: getComputedStyle(document.body).color }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    function requestNotificationPermission() {
+      if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+      }
+    }
+
+    function sendNotification(message) {
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("Daily Routine Reminder", {
+          body: message,
+          icon: "https://cdn-icons-png.flaticon.com/512/1827/1827504.png"
+        });
+      }
+    }
+
+    function exportData() {
+      const dataStr = JSON.stringify(activities, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = `${currentUserEmail}_activities.json`; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (!Array.isArray(imported)) throw new Error("Invalid format");
+          activities = imported;
+          saveActivities(); renderTable(); updateChart(); updateProgressBar();
+          showMessage("Data imported successfully!");
+        } catch { alert("Invalid JSON file."); }
+      };
+      reader.readAsText(file);
+      importFileInput.value = "";
+    }
+  </script>
+</body>
+</html>
